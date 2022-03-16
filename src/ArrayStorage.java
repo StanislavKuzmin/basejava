@@ -2,36 +2,36 @@
  * Array based storage for Resumes
  */
 public class ArrayStorage {
+
     Resume[] storage = new Resume[10000];
+    int size = 0;
 
     void clear() {
-        int size = size();
         for (int i = 0; i < size; i++) {
             storage[i] = null;
         }
+        size = 0;
     }
 
-     void save(Resume resume) {
-         int size = size();
-         if (size == storage.length) {
-             throw new ArrayIndexOutOfBoundsException("Array of resume is full, can't save resume");
-         }
-         storage[size] = resume;
+    void save(Resume resume) {
+        if (size == storage.length) {
+            System.out.println("Array of resumes is full, can't save resume");
+        } else {
+            storage[size] = resume;
+            size++;
+        }
     }
 
     Resume get(String uuid) {
-        int size = size();
-        Resume resume = null;
         for (int i = 0; i < size; i++) {
             if (storage[i].uuid.equals(uuid)) {
-                resume = storage[i];
+                return storage[i];
             }
         }
-        return resume;
+        return null;
     }
 
     void delete(String uuid) {
-        int size = size();
         for (int i = 0; i < size; i++) {
             if (storage[i].uuid.equals(uuid)) {
                 storage[i] = null;
@@ -43,6 +43,7 @@ public class ArrayStorage {
                         storage[j] = null;
                     }
                 }
+                size--;
                 break;
             }
         }
@@ -52,7 +53,6 @@ public class ArrayStorage {
      * @return array, contains only Resumes in storage (without null)
      */
     Resume[] getAll() {
-        int size = size();
         Resume[] storageWithoutNull = new Resume[size];
         for (int i = 0; i < size; i++) {
             storageWithoutNull[i] = storage[i];
@@ -61,13 +61,6 @@ public class ArrayStorage {
     }
 
     int size() {
-        int count = 0;
-        while (storage[count] != null) {
-            count++;
-            if (count > storage.length - 1) {
-                break;
-            }
-        }
-        return count;
+        return size;
     }
 }
