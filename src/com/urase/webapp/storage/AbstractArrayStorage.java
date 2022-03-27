@@ -1,6 +1,9 @@
 package com.urase.webapp.storage;
 
 import com.urase.webapp.model.Resume;
+import com.urase.webapp.exception.ExistStorageException;
+import com.urase.webapp.exception.NotExistStorageException;
+import com.urase.webapp.exception.StorageException;
 
 import java.util.Arrays;
 
@@ -19,9 +22,9 @@ public abstract class AbstractArrayStorage implements Storage {
     public final void save(Resume resume) {
         int indexResume = findIndexResume(resume.getUuid());
         if (size == storage.length) {
-            System.out.println("Array of resumes is full, can't save resume");
+            throw new StorageException("Storage overflow", resume.getUuid());
         } else if (indexResume >= 0) {
-            System.out.println("Can't save resume with uuid: " + resume.getUuid() + ", because it's already in the base");
+            throw new ExistStorageException(resume.getUuid());
         } else {
             insertNewResume(resume, indexResume);
             size++;
@@ -33,7 +36,7 @@ public abstract class AbstractArrayStorage implements Storage {
         if (indexResume >= 0) {
             storage[indexResume] = resume;
         } else {
-            System.out.println("Can't update resume, because there is no such resume with uuid: " + resume.getUuid());
+            throw new NotExistStorageException(resume.getUuid());
         }
     }
 
@@ -44,7 +47,7 @@ public abstract class AbstractArrayStorage implements Storage {
             System.arraycopy(storage, indexResume + 1, storage, indexResume, size - indexResume - 1);
             size--;
         } else {
-            System.out.println("Can't delete resume, because there is no such resume with uuid: " + uuid);
+            throw new NotExistStorageException(uuid);
         }
     }
 
@@ -61,8 +64,7 @@ public abstract class AbstractArrayStorage implements Storage {
         if (indexResume >= 0) {
             return storage[indexResume];
         }
-        System.out.println("Can't get resume, because there is no such resume with uuid: " + uuid);
-        return null;
+        throw new NotExistStorageException(uuid);
     }
 
     protected abstract void insertNewResume(Resume resume, int indexResume);
