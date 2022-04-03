@@ -2,7 +2,5 @@ package com.urase.webapp.storage;
 
 public class ListStorageTest extends AbstractStorageTest {
 
-    public ListStorageTest() {
-        super(new ListStorage());
-    }
+    public ListStorageTest() { super(new ListStorage()); }
 }

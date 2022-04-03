@@ -3,17 +3,20 @@ package com.urase.webapp.storage;
 import com.urase.webapp.model.Resume;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class ListStorage extends AbstractStorage {
+public class MapStorage extends AbstractStorage {
 
-    private List<Resume> storage = new ArrayList<>();
+    private Map<Integer, Resume> storage = new HashMap<>();
+    private int keyMap;
 
     @Override
     protected int findIndexResume(String uuid) {
-        for (int i = 0; i < storage.size(); i++) {
-            if (storage.get(i).getUuid().equals(uuid)) {
-                return i;
+        for(Map.Entry<Integer, Resume> entry: storage.entrySet()) {
+            if (entry.getValue().getUuid().equals(uuid)) {
+                return entry.getKey();
             }
         }
         return -1;
@@ -21,7 +24,8 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected void updateResume(int indexResume, Resume resume) {
-        storage.set(indexResume, resume);
+        int keyResume = findIndexResume(resume.getUuid());
+        storage.put(keyResume, resume);
     }
 
     @Override
@@ -36,7 +40,8 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected void insertNewResume(Resume resume, int indexResume) {
-        storage.add(resume);
+        storage.put(keyMap, resume);
+        keyMap++;
     }
 
     @Override
@@ -46,7 +51,8 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     public Resume[] getAll() {
-        return storage.toArray(new Resume[storage.size()]);
+        List<Resume> resumesList = new ArrayList<>(storage.values());
+        return resumesList.toArray(new Resume[storage.size()]);
     }
 
     @Override

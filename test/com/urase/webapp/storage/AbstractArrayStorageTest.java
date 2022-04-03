@@ -16,7 +16,7 @@ public abstract class AbstractArrayStorageTest extends AbstractStorageTest {
     }
 
     @Test(expected = StorageException.class)
-    public void save_shouldSaveNewResumesWithoutExceptionAndThrowsStorageException_whenArrayIsFull() {
+    public void save_shouldThrowException_whenArrayIsFull() {
         storage.clear();
         try {
             for (int i = 0; i < STORAGE_LIMIT; i++) {

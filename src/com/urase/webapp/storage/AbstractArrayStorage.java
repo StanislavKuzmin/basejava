@@ -1,5 +1,6 @@
 package com.urase.webapp.storage;
 
+import com.urase.webapp.exception.StorageException;
 import com.urase.webapp.model.Resume;
 
 import java.util.Arrays;
@@ -18,12 +19,12 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    protected void updateOneResume(int indexResume, Resume resume) {
+    protected void updateResume(int indexResume, Resume resume) {
         storage[indexResume] = resume;
     }
 
     @Override
-    protected void deleteOneResume(int indexResume) {
+    protected void deleteResume(int indexResume) {
         storage[indexResume] = null;
         System.arraycopy(storage, indexResume + 1, storage, indexResume, size - indexResume - 1);
         size--;
@@ -32,14 +33,6 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     @Override
     protected Resume getResumeByIndex(int indexResume) {
         return storage[indexResume];
-    }
-
-    @Override
-    protected boolean isStorageFull() {
-        if (size == storage.length) {
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -54,9 +47,19 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     @Override
     protected void insertNewResume(Resume resume, int indexResume) {
-        insertResumeInArray(resume, indexResume);
+        if (isStorageFull()) {
+            throw new StorageException("Storage overflow", resume.getUuid());
+        }
+        addToArray(resume, indexResume);
         size++;
     }
 
-    protected abstract void insertResumeInArray(Resume resume, int indexResume);
+    private boolean isStorageFull() {
+        if (size == storage.length) {
+            return true;
+        }
+        return false;
+    }
+
+    protected abstract void addToArray(Resume resume, int indexResume);
 }
