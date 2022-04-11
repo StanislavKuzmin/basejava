@@ -4,16 +4,16 @@ import com.urase.webapp.exception.StorageException;
 import com.urase.webapp.model.Resume;
 
 import java.util.Arrays;
+import java.util.List;
 
 public abstract class AbstractArrayStorage extends AbstractStorage {
 
     protected static final int STORAGE_LIMIT = 10000;
-
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
     protected int size = 0;
 
     @Override
-    public void clear() {
+    public final void clear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
     }
@@ -36,12 +36,12 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public Resume[] getAll() {
-        return Arrays.copyOf(storage, size);
+    protected void addToList(List<Resume> sortStorage) {
+        sortStorage.addAll(Arrays.asList(storage).subList(0, size));
     }
 
     @Override
-    public int size() {
+    public final int size() {
         return size;
     }
 

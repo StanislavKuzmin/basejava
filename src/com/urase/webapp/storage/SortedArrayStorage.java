@@ -3,6 +3,7 @@ package com.urase.webapp.storage;
 import com.urase.webapp.model.Resume;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class SortedArrayStorage extends AbstractArrayStorage {
 
@@ -16,6 +17,7 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     @Override
     protected Object findSearchKey(String uuid) {
         Resume searchKey = new Resume(uuid);
-        return Arrays.binarySearch(storage, 0, size, searchKey);
+        Comparator<Resume> comparatorUuid = Comparator.comparing(Resume::getUuid);
+        return Arrays.binarySearch(storage, 0, size, searchKey, comparatorUuid);
     }
 }

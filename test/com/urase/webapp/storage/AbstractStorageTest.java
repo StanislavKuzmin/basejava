@@ -6,7 +6,12 @@ import com.urase.webapp.model.Resume;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 public abstract class AbstractStorageTest {
 
@@ -14,22 +19,25 @@ public abstract class AbstractStorageTest {
     private static final String UUID_1 = "uuid1";
     private static final String UUID_2 = "uuid2";
     private static final String UUID_3 = "uuid3";
+    private static final String FULL_NAME_1 = "Obi-Wan Kenobi";
+    private static final String FULL_NAME_2 = "Dart Weider";
+    private static final String FULL_NAME_3 = "Anakin Skywalker";
     private static final int EXPECTED_SIZE = 3;
     private static final int EMPTY_SIZE = 0;
     private static final int AFTER_DELETE_SIZE = 2;
-    private static final Resume[] RESUME_STORAGE = new Resume[]{new Resume(UUID_1), new Resume(UUID_2), new Resume(UUID_3)};
-    private static final Resume[] ONE_DELETE_RESUME_STORAGE = new Resume[]{new Resume(UUID_2), new Resume(UUID_3)};
-    private static final Resume[] EMPTY_STORAGE = new Resume[0];
-    private static final Resume RESUME = new Resume(UUID_1);
+    private static final List<Resume> RESUME_STORAGE = new ArrayList<>(Arrays.asList(new Resume(UUID_3, FULL_NAME_3), new Resume(UUID_2, FULL_NAME_2), new Resume(UUID_1, FULL_NAME_1)));
+    private static final List<Resume> ONE_DELETE_RESUME_STORAGE = new ArrayList<>(Arrays.asList(new Resume(UUID_3, FULL_NAME_3), new Resume(UUID_2, FULL_NAME_2)));
+    private static final List<Resume> EMPTY_STORAGE = new ArrayList<>();
+    private static final Resume RESUME = new Resume(UUID_1, FULL_NAME_1);
 
     protected AbstractStorageTest(Storage storage) { this.storage = storage; }
 
     @Before
     public void setUp() {
         storage.clear();
-        storage.save(new Resume(UUID_1));
-        storage.save(new Resume(UUID_2));
-        storage.save(new Resume(UUID_3));
+        storage.save(new Resume(UUID_1, FULL_NAME_1));
+        storage.save(new Resume(UUID_2, FULL_NAME_2));
+        storage.save(new Resume(UUID_3, FULL_NAME_3));
     }
 
     @Test
@@ -40,10 +48,9 @@ public abstract class AbstractStorageTest {
     @Test
     public void clear_shouldResetToNullAllResumes() {
         storage.clear();
-        assertArrayEquals(EMPTY_STORAGE, storage.getAll());
+        assertEquals(EMPTY_STORAGE, storage.getAllSorted());
         assertEquals(EMPTY_SIZE, storage.size());
     }
-
 
     @Test
     public void update_shouldUpdateDefiniteResume() {
@@ -58,12 +65,12 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void getAll_shouldReturnAllResumes() {
-        assertArrayEquals(RESUME_STORAGE, storage.getAll());
+        assertEquals(RESUME_STORAGE, storage.getAllSorted());
     }
 
     @Test
     public void save_shouldSaveResumesInArray() {
-        assertArrayEquals(RESUME_STORAGE, storage.getAll());
+        assertEquals(RESUME_STORAGE, storage.getAllSorted());
         assertEquals(EXPECTED_SIZE, storage.size());
     }
 
@@ -75,7 +82,7 @@ public abstract class AbstractStorageTest {
     @Test
     public void delete_shouldDeleteDefiniteResume() {
         storage.delete(UUID_1);
-        assertArrayEquals(ONE_DELETE_RESUME_STORAGE, storage.getAll());
+        assertEquals(ONE_DELETE_RESUME_STORAGE, storage.getAllSorted());
         assertEquals(AFTER_DELETE_SIZE, storage.size());
     }
 

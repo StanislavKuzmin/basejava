@@ -4,31 +4,41 @@ import com.urase.webapp.exception.ExistStorageException;
 import com.urase.webapp.exception.NotExistStorageException;
 import com.urase.webapp.model.Resume;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 public abstract class AbstractStorage implements Storage {
-    private static final String UPDATE = "update";
-    private static final String DELETE = "delete";
-    private static final String GET = "get";
-    private static final String SAVE = "save";
+
+    private static final Comparator<Resume> RESUME_COMPARATOR = Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
+    private NameOfOperation nameOfOperation;
     private Resume foundResume;
 
     public final void update(Resume resume) {
-        crudStorage(UPDATE, resume);
+        crudStorage(nameOfOperation.UPDATE, resume);
     }
 
     public final void delete(String uuid) {
-        crudStorage(DELETE, new Resume(uuid));
+        crudStorage(nameOfOperation.DELETE, new Resume(uuid));
     }
 
     public final Resume get(String uuid) {
-        crudStorage(GET, new Resume(uuid));
+        crudStorage(nameOfOperation.GET, new Resume(uuid));
         return foundResume;
     }
 
     public final void save(Resume resume) {
-        crudStorage(SAVE, resume);
+        crudStorage(nameOfOperation.SAVE, resume);
     }
 
-    private void crudStorage(String nameOfOperation, Resume resume) {
+    public final List<Resume> getAllSorted() {
+        List<Resume> sortStorage = new ArrayList<>();
+        addToList(sortStorage);
+        sortStorage.sort(RESUME_COMPARATOR);
+        return sortStorage;
+    }
+
+    private void crudStorage(NameOfOperation nameOfOperation, Resume resume) {
         Object searchKey = findSearchKey(resume.getUuid());
         if (isExist(searchKey)) {
             switch (nameOfOperation) {
@@ -44,7 +54,7 @@ public abstract class AbstractStorage implements Storage {
                 case SAVE:
                     throw new ExistStorageException(resume.getUuid());
             }
-        } else if (nameOfOperation.equals(SAVE)) {
+        } else if (nameOfOperation.equals(nameOfOperation.SAVE)) {
             insertNewResume(resume, searchKey);
         } else {
             throw new NotExistStorageException(resume.getUuid());
@@ -63,4 +73,5 @@ public abstract class AbstractStorage implements Storage {
 
     protected abstract boolean isExist(Object searchKey);
 
+    protected abstract void addToList(List<Resume> sortStorage);
 }
