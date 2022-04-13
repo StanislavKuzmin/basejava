@@ -45,8 +45,8 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected void addToList(List<Resume> sortStorage) {
-        sortStorage.addAll(storage);
+    protected List<Resume> getListResume() {
+        return storage;
     }
 
     @Override

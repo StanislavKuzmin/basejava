@@ -11,29 +11,27 @@ import java.util.List;
 public abstract class AbstractStorage implements Storage {
 
     private static final Comparator<Resume> RESUME_COMPARATOR = Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
-    private NameOfOperation nameOfOperation;
     private Resume foundResume;
 
     public final void update(Resume resume) {
-        crudStorage(nameOfOperation.UPDATE, resume);
+        crudStorage(NameOfOperation.UPDATE, resume);
     }
 
     public final void delete(String uuid) {
-        crudStorage(nameOfOperation.DELETE, new Resume(uuid));
+        crudStorage(NameOfOperation.DELETE, new Resume(uuid, null));
     }
 
     public final Resume get(String uuid) {
-        crudStorage(nameOfOperation.GET, new Resume(uuid));
+        crudStorage(NameOfOperation.GET, new Resume(uuid, null));
         return foundResume;
     }
 
     public final void save(Resume resume) {
-        crudStorage(nameOfOperation.SAVE, resume);
+        crudStorage(NameOfOperation.SAVE, resume);
     }
 
     public final List<Resume> getAllSorted() {
-        List<Resume> sortStorage = new ArrayList<>();
-        addToList(sortStorage);
+        List<Resume> sortStorage = getListResume();
         sortStorage.sort(RESUME_COMPARATOR);
         return sortStorage;
     }
@@ -73,5 +71,5 @@ public abstract class AbstractStorage implements Storage {
 
     protected abstract boolean isExist(Object searchKey);
 
-    protected abstract void addToList(List<Resume> sortStorage);
+    protected abstract List<Resume> getListResume();
 }

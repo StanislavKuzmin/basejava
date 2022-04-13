@@ -3,6 +3,7 @@ package com.urase.webapp.storage;
 import com.urase.webapp.exception.StorageException;
 import com.urase.webapp.model.Resume;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     protected int size = 0;
 
     @Override
-    public final void clear() {
+    public void clear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
     }
@@ -36,12 +37,12 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    protected void addToList(List<Resume> sortStorage) {
-        sortStorage.addAll(Arrays.asList(storage).subList(0, size));
+    protected List<Resume> getListResume() {
+        return new ArrayList<>(Arrays.asList(storage).subList(0, size));
     }
 
     @Override
-    public final int size() {
+    public int size() {
         return size;
     }
 

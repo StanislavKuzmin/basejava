@@ -1,24 +1,23 @@
 package com.urase.webapp.model;
 
 import java.util.Objects;
-import java.util.UUID;
 
 public class Resume {
 
     private String uuid;
     private String fullName;
 
-    public Resume() {
-        this.uuid=UUID.randomUUID().toString();
-    }
+//    public Resume() {
+//        this.uuid=UUID.randomUUID().toString();
+//    }
 
     public Resume(String uuid, String fullName) {
         this.uuid = uuid;
         this.fullName = fullName;
     }
 
-    public Resume(String uuid) {
-        this.uuid = uuid;
+    public Resume(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getUuid() {

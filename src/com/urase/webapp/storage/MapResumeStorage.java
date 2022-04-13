@@ -2,48 +2,51 @@ package com.urase.webapp.storage;
 
 import com.urase.webapp.model.Resume;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MapResumeStorage extends AbstractStorage {
 
-    private Map<Resume, Resume> storage = new HashMap<>();
+    private Map<String, Resume> storage = new HashMap<>();
 
     @Override
     protected Object findSearchKey(String uuid) {
-        return new Resume(uuid);
+        if(storage.get(uuid) == null) {
+            return new Resume(uuid, null);
+        }
+        return storage.get(uuid);
     }
 
     @Override
-    protected void updateResume(Object key, Resume resume) {
-        storage.put((Resume) key, resume);
+    protected void updateResume(Object searchKey, Resume resume) {
+        Resume key = (Resume) searchKey;
+        storage.put(key.getUuid(), resume);
     }
 
     @Override
-    protected void deleteResume(Object key) {
-        storage.remove((Resume) key);
+    protected void deleteResume(Object searchKey) {
+        Resume key = (Resume) searchKey;
+        storage.remove(key.getUuid());
     }
 
     @Override
-    protected Resume getResume(Object key) {
-        return storage.get((Resume) key);
+    protected Resume getResume(Object searchKey) {
+        return (Resume) searchKey;
     }
 
     @Override
-    protected void insertNewResume(Resume resume, Object key) {
-        storage.put((Resume) key, resume);
+    protected void insertNewResume(Resume resume, Object searchKey) {
+        storage.put(resume.getUuid(), resume);
     }
 
     @Override
-    protected boolean isExist(Object key) {
-        return storage.containsKey((Resume) key);
+    protected boolean isExist(Object searchKey) {
+        Resume key = (Resume) searchKey;
+        return storage.containsKey(key.getUuid());
     }
 
     @Override
-    protected void addToList(List<Resume> sortStorage) {
-        sortStorage.addAll(new ArrayList<>(storage.values()));
+    protected List<Resume> getListResume() {
+        return new ArrayList<>(storage.values());
     }
 
     @Override
