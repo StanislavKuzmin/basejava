@@ -52,7 +52,7 @@ public abstract class AbstractStorage implements Storage {
                 case SAVE:
                     throw new ExistStorageException(resume.getUuid());
             }
-        } else if (nameOfOperation.equals(nameOfOperation.SAVE)) {
+        } else if (nameOfOperation.equals(NameOfOperation.SAVE)) {
             insertNewResume(resume, searchKey);
         } else {
             throw new NotExistStorageException(resume.getUuid());
