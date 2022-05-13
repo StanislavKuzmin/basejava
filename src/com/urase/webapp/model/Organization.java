@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Organization<T> extends AbstractSection {
+public class Organization<Experience> extends AbstractSection {
 
-    private List<T> organizations;
+    private List<Experience> organizations;
 
     public Organization() {
         organizations = new ArrayList<>();
     }
 
-    public List<T> getOrganizations() {
+    public List<Experience> getOrganizations() {
         return organizations;
     }
 
-    public void setOrganizations(T section) {
+    public void setOrganizations(Experience section) {
         organizations.add(section);
     }
 

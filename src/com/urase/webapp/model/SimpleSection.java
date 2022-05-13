@@ -2,7 +2,7 @@ package com.urase.webapp.model;
 
 import java.util.Objects;
 
-public class SimpleSection extends AbstractSection{
+public class SimpleSection extends AbstractSection {
     private String text;
 
     public String getText() {
