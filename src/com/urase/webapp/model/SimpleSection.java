@@ -3,14 +3,14 @@ package com.urase.webapp.model;
 import java.util.Objects;
 
 public class SimpleSection extends AbstractSection {
-    private String text;
+    private final String text;
+
+    public SimpleSection(String text) {
+        this.text = text;
+    }
 
     public String getText() {
         return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 
     @Override

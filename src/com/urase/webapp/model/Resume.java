@@ -1,9 +1,6 @@
 package com.urase.webapp.model;
 
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class Resume {
 
@@ -52,7 +49,8 @@ public class Resume {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Resume resume = (Resume) o;
-        return Objects.equals(uuid, resume.uuid) && Objects.equals(fullName, resume.fullName) && Objects.equals(sections, resume.sections) && Objects.equals(contacts, resume.contacts);
+        return Objects.equals(uuid, resume.uuid) && Objects.equals(fullName, resume.fullName) &&
+                Objects.equals(sections, resume.sections) && Objects.equals(contacts, resume.contacts);
     }
 
     @Override

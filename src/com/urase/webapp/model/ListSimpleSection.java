@@ -6,18 +6,18 @@ import java.util.Objects;
 
 public class ListSimpleSection extends AbstractSection {
 
-    private List<String> simpleSectionList;
+    private List<String> items;
 
     public ListSimpleSection() {
-        simpleSectionList = new ArrayList<>();
+        items = new ArrayList<>();
     }
 
-    public List<String> getSimpleSectionList() {
-        return simpleSectionList;
+    public List<String> getItems() {
+        return items;
     }
 
     public void addTextToList(String text) {
-        simpleSectionList.add(text);
+        items.add(text);
     }
 
     @Override
@@ -25,16 +25,16 @@ public class ListSimpleSection extends AbstractSection {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ListSimpleSection that = (ListSimpleSection) o;
-        return Objects.equals(simpleSectionList, that.simpleSectionList);
+        return Objects.equals(items, that.items);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(simpleSectionList);
+        return Objects.hash(items);
     }
 
     @Override
     public String toString() {
-        return simpleSectionList + "";
+        return items + "";
     }
 }

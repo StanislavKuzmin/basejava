@@ -1,5 +1,6 @@
 package com.urase.webapp.storage;
 
+import com.urase.webapp.ResumeTestData;
 import com.urase.webapp.exception.ExistStorageException;
 import com.urase.webapp.exception.NotExistStorageException;
 import com.urase.webapp.model.Resume;
@@ -25,19 +26,22 @@ public abstract class AbstractStorageTest {
     private static final int EXPECTED_SIZE = 3;
     private static final int EMPTY_SIZE = 0;
     private static final int AFTER_DELETE_SIZE = 2;
-    private static final List<Resume> RESUME_STORAGE = new ArrayList<>(Arrays.asList(new Resume(UUID_3, FULL_NAME_3), new Resume(UUID_2, FULL_NAME_2), new Resume(UUID_1, FULL_NAME_1)));
-    private static final List<Resume> ONE_DELETE_RESUME_STORAGE = new ArrayList<>(Arrays.asList(new Resume(UUID_3, FULL_NAME_3), new Resume(UUID_2, FULL_NAME_2)));
+    private static final ResumeTestData resumeTestData = new ResumeTestData();
+    private static final List<Resume> RESUME_STORAGE = new ArrayList<>(Arrays.asList(resumeTestData.createResume(UUID_3, FULL_NAME_3),
+            resumeTestData.createResume(UUID_2, FULL_NAME_2), resumeTestData.createResume(UUID_1, FULL_NAME_1)));
+    private static final List<Resume> ONE_DELETE_RESUME_STORAGE = new ArrayList<>(Arrays.asList(resumeTestData.createResume(UUID_3, FULL_NAME_3),
+            resumeTestData.createResume(UUID_2, FULL_NAME_2)));
     private static final List<Resume> EMPTY_STORAGE = new ArrayList<>();
-    private static final Resume RESUME = new Resume(UUID_1, FULL_NAME_1);
+    private static final Resume RESUME = resumeTestData.createResume(UUID_1, FULL_NAME_1);
 
     protected AbstractStorageTest(Storage storage) { this.storage = storage; }
 
     @Before
     public void setUp() {
         storage.clear();
-        storage.save(new Resume(UUID_1, FULL_NAME_1));
-        storage.save(new Resume(UUID_2, FULL_NAME_2));
-        storage.save(new Resume(UUID_3, FULL_NAME_3));
+        storage.save(resumeTestData.createResume(UUID_1, FULL_NAME_1));
+        storage.save(resumeTestData.createResume(UUID_2, FULL_NAME_2));
+        storage.save(resumeTestData.createResume(UUID_3, FULL_NAME_3));
     }
 
     @Test

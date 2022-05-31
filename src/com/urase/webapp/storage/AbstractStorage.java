@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public abstract class AbstractStorage implements Storage {
+public abstract class AbstractStorage<SK> implements Storage {
 
     private static final Comparator<Resume> RESUME_COMPARATOR = Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
     private Resume foundResume;
@@ -37,7 +37,7 @@ public abstract class AbstractStorage implements Storage {
     }
 
     private void crudStorage(NameOfOperation nameOfOperation, Resume resume) {
-        Object searchKey = findSearchKey(resume.getUuid());
+        SK searchKey = findSearchKey(resume.getUuid());
         if (isExist(searchKey)) {
             switch (nameOfOperation) {
                 case UPDATE:
@@ -59,17 +59,17 @@ public abstract class AbstractStorage implements Storage {
         }
     }
 
-    protected abstract Object findSearchKey(String uuid);
+    protected abstract SK findSearchKey(String uuid);
 
-    protected abstract void updateResume(Object searchKey, Resume resume);
+    protected abstract void updateResume(SK searchKey, Resume resume);
 
-    protected abstract void deleteResume(Object searchKey);
+    protected abstract void deleteResume(SK searchKey);
 
-    protected abstract Resume getResume(Object searchKey);
+    protected abstract Resume getResume(SK searchKey);
 
-    protected abstract void insertNewResume(Resume resume, Object searchKey);
+    protected abstract void insertNewResume(Resume resume, SK searchKey);
 
-    protected abstract boolean isExist(Object searchKey);
+    protected abstract boolean isExist(SK searchKey);
 
     protected abstract List<Resume> getListResume();
 }
