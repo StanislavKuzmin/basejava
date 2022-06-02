@@ -9,15 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class AbstractFileStorage extends AbstractStorage<File>{
+public abstract class AbstractFileStorage extends AbstractStorage<File> {
     private File directory;
 
     protected AbstractFileStorage(File directory) {
         Objects.requireNonNull(directory, "directory must not be null");
-        if(!directory.isDirectory()) {
+        if (!directory.isDirectory()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not directory");
         }
-        if(!directory.canRead() || !directory.canWrite()) {
+        if (!directory.canRead() || !directory.canWrite()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not readable/writable");
         }
         this.directory = directory;
@@ -66,8 +66,8 @@ public abstract class AbstractFileStorage extends AbstractStorage<File>{
     protected List<Resume> getListResume() {
         List<Resume> resumes = new ArrayList<>();
         File[] filesResume = directory.listFiles();
-        if(filesResume != null) {
-            for(File file : filesResume) {
+        if (filesResume != null) {
+            for (File file : filesResume) {
                 resumes.add(createResumeFromFile(file));
             }
         }
@@ -82,8 +82,8 @@ public abstract class AbstractFileStorage extends AbstractStorage<File>{
     @Override
     public int size() {
         String[] filesArray = directory.list();
-        if(filesArray != null) {
-            return directory.list().length;
+        if (filesArray != null) {
+            return filesArray.length;
         }
         return 0;
     }

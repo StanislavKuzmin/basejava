@@ -15,9 +15,8 @@ public class MainReflection {
         System.out.println(field.getName());
         System.out.println(field.get(r));
         field.set(r, "new_uuid");
-        // TODO : invoke r.toString via reflection
         System.out.println(r);
-        Class clazz = Class.forName(Resume.class.getName());
+        Class<?> clazz = Class.forName(Resume.class.getName());
         Method toString = clazz.getDeclaredMethod("toString");
         System.out.println(toString.invoke(r));
     }

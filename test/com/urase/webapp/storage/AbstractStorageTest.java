@@ -34,7 +34,9 @@ public abstract class AbstractStorageTest {
     private static final List<Resume> EMPTY_STORAGE = new ArrayList<>();
     private static final Resume RESUME = resumeTestData.createResume(UUID_1, FULL_NAME_1);
 
-    protected AbstractStorageTest(Storage storage) { this.storage = storage; }
+    protected AbstractStorageTest(Storage storage) {
+        this.storage = storage;
+    }
 
     @Before
     public void setUp() {

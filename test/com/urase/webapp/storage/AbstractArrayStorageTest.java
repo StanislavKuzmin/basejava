@@ -10,6 +10,7 @@ public abstract class AbstractArrayStorageTest extends AbstractStorageTest {
 
     private static final int STORAGE_LIMIT = 10000;
     private static final String FULL_NAME = "unknown person";
+
     protected AbstractArrayStorageTest(Storage storage) {
         super(storage);
     }

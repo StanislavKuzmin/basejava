@@ -1,11 +1,13 @@
 package com.urase.webapp;
+
 import java.io.File;
 
 public class MainFile {
     public static void main(String[] args) {
-        String filePath = "C:\\basejava";
+        String filePath = "/basejava";
         printFileName(filePath);
     }
+
     static void printFileName(String path) {
         File dir = new File(path);
         if (!dir.exists()) {
@@ -16,14 +18,20 @@ public class MainFile {
             printAllFilesFromDirectory(dir);
         }
     }
+
     private static void printAllFilesFromDirectory(File dir) {
-        for (File file : dir.listFiles()) {
-            if (file.isFile()) {
-                System.out.println(file.getName());
+        File[] dirFiles = dir.listFiles();
+        if (dirFiles != null) {
+            for (File file : dirFiles) {
+                if (file.isFile()) {
+                    System.out.println(file.getName());
+                }
+                if (file.isDirectory()) {
+                    printAllFilesFromDirectory(file);
+                }
             }
-            if (file.isDirectory()) {
-                printAllFilesFromDirectory(file);
-            }
+        } else {
+            System.out.println("Данный каталог пуст");
         }
     }
 }
