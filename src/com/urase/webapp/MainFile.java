@@ -3,6 +3,9 @@ package com.urase.webapp;
 import java.io.File;
 
 public class MainFile {
+    private static final String DASH = "-";
+    static StringBuilder counter = new StringBuilder(DASH);
+
     public static void main(String[] args) {
         String filePath = "/basejava";
         printFileName(filePath);
@@ -24,12 +27,15 @@ public class MainFile {
         if (dirFiles != null) {
             for (File file : dirFiles) {
                 if (file.isFile()) {
-                    System.out.println(file.getName());
+                    System.out.println(counter + file.getName() + " :file");
                 }
                 if (file.isDirectory()) {
+                    System.out.println(counter + file.getName() + " :directory");
+                    counter.append(DASH);
                     printAllFilesFromDirectory(file);
                 }
             }
+            counter.deleteCharAt(counter.length() - 1);
         } else {
             System.out.println("Данный каталог пуст");
         }
