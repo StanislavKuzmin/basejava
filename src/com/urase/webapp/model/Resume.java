@@ -1,12 +1,14 @@
 package com.urase.webapp.model;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class Resume {
+public class Resume implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private String uuid;
     private String fullName;
     private Map<SectionType, AbstractSection> sections;
