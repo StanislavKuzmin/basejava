@@ -30,7 +30,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected void updateResume(File file, Resume resume) {
         try {
-            doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
+            doWrite(resume, file);
         } catch (IOException e) {
             throw new StorageException("File write error", resume.getUuid(), e);
         }
@@ -46,7 +46,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected Resume getResume(File file) {
         try {
-            return doRead(new BufferedInputStream(new FileInputStream(file)));
+            return doRead(file);
         } catch (IOException e) {
             throw new StorageException("File read error", file.getName(), e);
         }
@@ -99,7 +99,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         return filesArray.length;
     }
 
-    public abstract void doWrite(Resume resume, OutputStream os) throws IOException;
+    public abstract void doWrite(Resume resume, File file) throws IOException;
 
-    public abstract Resume doRead(InputStream is) throws IOException;
+    public abstract Resume doRead(File file) throws IOException;
 }
