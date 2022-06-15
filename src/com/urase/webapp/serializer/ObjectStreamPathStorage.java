@@ -1,11 +1,10 @@
-package com.urase.webapp.storage;
+package com.urase.webapp.serializer;
 
 import com.urase.webapp.exception.StorageException;
 import com.urase.webapp.model.Resume;
+import com.urase.webapp.storage.AbstractPathStorage;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class ObjectStreamPathStorage extends AbstractPathStorage {
 
@@ -14,15 +13,15 @@ public class ObjectStreamPathStorage extends AbstractPathStorage {
     }
 
     @Override
-    public void doWrite(Resume resume, Path path) throws IOException {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(Files.newOutputStream(path)))) {
+    public void doWrite(Resume resume, OutputStream os) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(os)) {
             oos.writeObject(resume);
         }
     }
 
     @Override
-    public Resume doRead(Path path) throws IOException {
-        try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(Files.newInputStream(path)))) {
+    public Resume doRead(InputStream is) throws IOException {
+        try (ObjectInputStream ois = new ObjectInputStream(is)) {
             return (Resume) ois.readObject();
         } catch (ClassNotFoundException e) {
             throw new StorageException("Error read resume", null, e);

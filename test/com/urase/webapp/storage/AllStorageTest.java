@@ -1,5 +1,9 @@
 package com.urase.webapp.storage;
 
+import com.urase.webapp.serializer.FileStorageTest;
+import com.urase.webapp.serializer.ObjectStreamPathStorageTest;
+import com.urase.webapp.serializer.ObjectStreamStorageTest;
+import com.urase.webapp.serializer.PathStorageTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -12,8 +16,8 @@ import org.junit.runners.Suite;
         MapResumeStorageTest.class,
         ObjectStreamStorageTest.class,
         ObjectStreamPathStorageTest.class,
-        FileContextTest.class,
-        PathContextTest.class
+        FileStorageTest.class,
+        PathStorageTest.class
 })
 public class AllStorageTest {
 }
