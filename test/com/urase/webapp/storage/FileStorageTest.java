@@ -1,6 +1,6 @@
-package com.urase.webapp.serializer;
+package com.urase.webapp.storage;
 
-import com.urase.webapp.storage.AbstractStorageTest;
+import com.urase.webapp.storage.serializer.ObjectStreamStrategy;
 
 public class FileStorageTest extends AbstractStorageTest {
 

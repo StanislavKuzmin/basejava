@@ -1,8 +1,8 @@
-package com.urase.webapp.serializer;
+package com.urase.webapp.storage;
 
 import com.urase.webapp.exception.StorageException;
 import com.urase.webapp.model.Resume;
-import com.urase.webapp.storage.AbstractStorage;
+import com.urase.webapp.storage.serializer.SerializationStrategy;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PathStorage extends AbstractStorage<Path> {
-    SerializationStrategy serializationStrategy;
+    private SerializationStrategy serializationStrategy;
     private Path directory;
 
     public PathStorage(String dir, SerializationStrategy serializationStrategy) {
@@ -77,23 +77,17 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected List<Resume> getListResume() {
-        try (Stream<Path> pathStream = createStream(directory)) {
-            return pathStream.map(this::getResume).collect(Collectors.toList());
-        }
+        return createStream(directory).map(this::getResume).collect(Collectors.toList());
     }
 
     @Override
     public void clear() {
-        try (Stream<Path> pathStream = createStream(directory)) {
-            pathStream.forEach(this::deleteResume);
-        }
+        createStream(directory).forEach(this::deleteResume);
     }
 
     @Override
     public int size() {
-        try (Stream<Path> pathStream = createStream(directory)) {
-            return (int) pathStream.count();
-        }
+        return (int) createStream(directory).count();
     }
 
     private Stream<Path> createStream(Path directory) {
