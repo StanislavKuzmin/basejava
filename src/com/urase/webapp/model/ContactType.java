@@ -18,9 +18,4 @@ public enum ContactType {
     public String getNameContact() {
         return nameContact;
     }
-
-    @Override
-    public String toString() {
-        return "'" + nameContact + "'";
-    }
 }

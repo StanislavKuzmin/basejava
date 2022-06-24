@@ -37,41 +37,36 @@ public class ResumeTestData {
     }
 
     private void initializeObjective(Resume resume) {
-        SimpleSection position = new SimpleSection("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям");
+        SimpleSection position = new SimpleSection("text1");
         resume.saveSection(OBJECTIVE, position);
     }
 
     private void initializePersonal(Resume resume) {
-        SimpleSection personal = new SimpleSection("Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры");
+        SimpleSection personal = new SimpleSection("text2");
         resume.saveSection(PERSONAL, personal);
     }
 
     private void initializeAchievement(Resume resume) {
         ListSimpleSection achievement = new ListSimpleSection();
-        achievement.addTextToList("Организация команды и успешная реализация Java проектов для сторонних заказчиков: приложения автопарк на стеке" +
-                " Spring Cloud/микросервисы, система мониторинга показателей спортсменов на Spring Boot, участие в проекте МЭШ на Play-2," +
-                " многомодульный Spring Boot + Vaadin проект для комплексных DIY смет");
-        achievement.addTextToList("С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"Многомодульный maven." +
-                " Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие (JMS/AKKA)\". Организация онлайн стажировок" +
-                " и ведение проектов. Более 3500 выпускников");
+        achievement.addTextToList("text4");
+        achievement.addTextToList("text5");
         resume.saveSection(ACHIEVEMENT, achievement);
     }
 
     private void initializeQualifications(Resume resume) {
         ListSimpleSection qualifications = new ListSimpleSection();
-        qualifications.addTextToList("JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2");
-        qualifications.addTextToList("Version control: Subversion, Git, Mercury, ClearCase, Perforce");
+        qualifications.addTextToList("text6");
+        qualifications.addTextToList("text7");
         resume.saveSection(QUALIFICATIONS, qualifications);
     }
 
     private void initializeExperience(Resume resume) {
         Period period1 = new Period(LocalDate.of(2013, 10, 1), LocalDate.now(),
-                "Создание, организация и проведение Java онлайн проектов и стажировок.", "Автор проекта");
+                "text8", "Автор проекта");
         Organization organization_1 = new Organization("https://javaops.ru/");
         organization_1.addToPeriods(period1);
         Period period2 = new Period(LocalDate.of(2014, 10, 1), LocalDate.of(2016, 1, 1),
-                "Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API," +
-                        " Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO.",
+                "text9",
                 "Старший разработчик (backend)");
         Organization organization_2 = new Organization("https://www.wrike.com/");
         organization_2.addToPeriods(period2);

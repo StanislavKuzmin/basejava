@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileStorage extends AbstractStorage<File> {
-    private SerializationStrategy serializationStrategy;
-    private File directory;
+    private final SerializationStrategy serializationStrategy;
+    private final File directory;
 
     public FileStorage(File directory, SerializationStrategy serializationStrategy) {
         if (!directory.isDirectory()) {

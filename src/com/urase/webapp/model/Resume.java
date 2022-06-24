@@ -1,11 +1,15 @@
 package com.urase.webapp.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Resume implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,6 +29,9 @@ public class Resume implements Serializable {
         contacts = new EnumMap<>(ContactType.class);
     }
 
+    public Resume() {
+    }
+
     public String getUuid() {
         return uuid;
     }
@@ -37,16 +44,16 @@ public class Resume implements Serializable {
         sections.put(sectionType, sectionOfResume);
     }
 
-    public AbstractSection getSection(SectionType sectionType) {
-        return sections.get(sectionType);
+    public Map<SectionType, AbstractSection> getSections() {
+        return sections;
     }
 
     public void saveContact(ContactType contactType, String contact) {
         contacts.put(contactType, contact);
     }
 
-    public String getContact(ContactType contactType) {
-        return contacts.get(contactType);
+    public Map<ContactType, String> getContacts() {
+        return contacts;
     }
 
     @Override
