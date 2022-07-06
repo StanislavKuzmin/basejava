@@ -1,10 +1,13 @@
 package com.urase.webapp.storage.serializer;
 
+import com.urase.webapp.exception.StorageException;
 import com.urase.webapp.model.*;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class DataStreamSerializer implements SerializationStrategy {
     @Override
@@ -57,31 +60,38 @@ public class DataStreamSerializer implements SerializationStrategy {
             readWithException(dis, () -> resume.saveContact(ContactType.valueOf(dis.readUTF()), dis.readUTF()));
             readWithException(dis, () -> {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
-                AbstractSection abstractSection = null;
-                switch (sectionType) {
-                    case PERSONAL:
-                    case OBJECTIVE:
-                        abstractSection = readListWithException(dis, () -> new SimpleSection(dis.readUTF()));
-                        break;
-                    case ACHIEVEMENT:
-                    case QUALIFICATIONS:
-                        ListSimpleSection listSimpleSection = new ListSimpleSection();
-                        readWithException(dis, () -> listSimpleSection.addTextToList(dis.readUTF()));
-                        abstractSection = listSimpleSection;
-                        break;
-                    case EDUCATION:
-                    case EXPERIENCE:
-                        OrganizationSection organizationSection = new OrganizationSection();
-                        readWithException(dis, () -> {
-                            Organization organization = new Organization(dis.readUTF());
-                            readWithException(dis, () -> organization.addToPeriods(new Period(LocalDate.parse(dis.readUTF()),
-                                    LocalDate.parse(dis.readUTF()), dis.readUTF(), dis.readUTF())));
-                            organizationSection.setOrganizations(organization);
-                        });
-                        abstractSection = organizationSection;
-                        break;
-                }
-                resume.saveSection(sectionType, abstractSection);
+                resume.saveSection(sectionType, readListWithException(dis, () -> readListWithException(dis, () -> {
+                    switch (sectionType) {
+                        case PERSONAL:
+                        case OBJECTIVE:
+                            return readListWithException(dis, () -> new SimpleSection(dis.readUTF()));
+                        case ACHIEVEMENT:
+                        case QUALIFICATIONS:
+                            return readListWithException(dis, () -> {
+                                ListSimpleSection listSimpleSection = new ListSimpleSection();
+                                readWithException(dis, () -> listSimpleSection.addTextToList(dis.readUTF()));
+                                return listSimpleSection;
+                            });
+                        case EDUCATION:
+                        case EXPERIENCE:
+                            return readListWithException(dis, () -> {
+                                OrganizationSection organizationSection = new OrganizationSection();
+                                readCollectionWithException(dis, () -> {
+                                    List<Organization> organizations = new ArrayList<>();
+                                    readWithException(dis, () -> {
+                                        Organization organization = new Organization(dis.readUTF());
+                                        readWithException(dis, () -> organization.addToPeriods(new Period(LocalDate.parse(dis.readUTF()),
+                                                LocalDate.parse(dis.readUTF()), dis.readUTF(), dis.readUTF())));
+                                        organizations.add(organization);
+                                    });
+                                    return organizations;
+                                }).forEach(organizationSection::setOrganizations);
+                                return organizationSection;
+                            });
+                        default:
+                            throw new StorageException("There is no such section", "");
+                    }
+                })));
             });
             return resume;
         }
@@ -94,14 +104,18 @@ public class DataStreamSerializer implements SerializationStrategy {
         }
     }
 
-    private void readWithException(DataInputStream dis, ReadItems read) throws IOException {
+    private void readWithException(DataInputStream dis, ReadItems reader) throws IOException {
         int size = dis.readInt();
         for (int i = 0; i < size; i++) {
-            read.read();
+            reader.read();
         }
     }
-    private <T> T readListWithException(DataInputStream dis, ReadList<T> read) throws IOException{
-        return read.read();
+    private <T> T readListWithException(DataInputStream dis, ReadList<T> reader) throws IOException{
+        return reader.read();
+    }
+
+    private <T> List<T> readCollectionWithException(DataInputStream dis, ReadCollection<T> reader) throws IOException{
+        return reader.read();
     }
 }
 
