@@ -60,38 +60,35 @@ public class DataStreamSerializer implements SerializationStrategy {
             readWithException(dis, () -> resume.saveContact(ContactType.valueOf(dis.readUTF()), dis.readUTF()));
             readWithException(dis, () -> {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
-                resume.saveSection(sectionType, readListWithException(dis, () -> readListWithException(dis, () -> {
+                resume.saveSection(sectionType, readSectionWithException(dis, () -> {
                     switch (sectionType) {
                         case PERSONAL:
                         case OBJECTIVE:
-                            return readListWithException(dis, () -> new SimpleSection(dis.readUTF()));
+                            return readSectionWithException(dis, () -> new SimpleSection(dis.readUTF()));
                         case ACHIEVEMENT:
                         case QUALIFICATIONS:
-                            return readListWithException(dis, () -> {
+                            return readSectionWithException(dis, () -> {
                                 ListSimpleSection listSimpleSection = new ListSimpleSection();
-                                readWithException(dis, () -> listSimpleSection.addTextToList(dis.readUTF()));
+                                readListWithException(dis, dis::readUTF).forEach(listSimpleSection::addTextToList);
                                 return listSimpleSection;
                             });
                         case EDUCATION:
                         case EXPERIENCE:
-                            return readListWithException(dis, () -> {
+                            return readSectionWithException(dis, () -> {
                                 OrganizationSection organizationSection = new OrganizationSection();
-                                readCollectionWithException(dis, () -> {
-                                    List<Organization> organizations = new ArrayList<>();
-                                    readWithException(dis, () -> {
-                                        Organization organization = new Organization(dis.readUTF());
-                                        readWithException(dis, () -> organization.addToPeriods(new Period(LocalDate.parse(dis.readUTF()),
-                                                LocalDate.parse(dis.readUTF()), dis.readUTF(), dis.readUTF())));
-                                        organizations.add(organization);
-                                    });
-                                    return organizations;
+                                readListWithException(dis, () -> {
+                                    Organization organization = new Organization(dis.readUTF());
+                                    readListWithException(dis, () -> new Period(LocalDate.parse(dis.readUTF()),
+                                            LocalDate.parse(dis.readUTF()), dis.readUTF(), dis.readUTF())).
+                                            forEach(organization::addToPeriods);
+                                    return organization;
                                 }).forEach(organizationSection::setOrganizations);
                                 return organizationSection;
                             });
                         default:
-                            throw new StorageException("There is no such section", "");
+                            throw new StorageException("Unknown type of section in file", null);
                     }
-                })));
+                }));
             });
             return resume;
         }
@@ -110,12 +107,17 @@ public class DataStreamSerializer implements SerializationStrategy {
             reader.read();
         }
     }
-    private <T> T readListWithException(DataInputStream dis, ReadList<T> reader) throws IOException{
+    private <T> T readSectionWithException(DataInputStream dis, ReadList<T> reader) throws IOException{
         return reader.read();
     }
 
-    private <T> List<T> readCollectionWithException(DataInputStream dis, ReadCollection<T> reader) throws IOException{
-        return reader.read();
+    private <T> List<T> readListWithException(DataInputStream dis, ReadList<T> reader) throws IOException{
+        List<T> listRead = new ArrayList<>();
+        int size = dis.readInt();
+        for (int i = 0; i < size; i++) {
+            listRead.add(reader.read());
+        }
+        return listRead;
     }
 }
 
