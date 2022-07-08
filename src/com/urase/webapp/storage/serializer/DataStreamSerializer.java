@@ -10,6 +10,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class DataStreamSerializer implements SerializationStrategy {
+
+    private static final String EMPTY_SECTION = "";
     @Override
     public void serializeResume(Resume resume, OutputStream os) throws IOException {
         try (DataOutputStream dos = new DataOutputStream(os)) {
@@ -37,12 +39,12 @@ public class DataStreamSerializer implements SerializationStrategy {
                     case EXPERIENCE:
                         OrganizationSection organizationSection = (OrganizationSection) abstractSection;
                         writeWithException(organizationSection.getOrganizations(), dos, writerOrg -> {
-                            dos.writeUTF(writerOrg.getLinkEmployer());
+                            writeEmptyString(dos, writerOrg.getLinkEmployer());
                             writeWithException(writerOrg.getPeriods(), dos, writerPer -> {
                                 dos.writeUTF(writerPer.getStartDate().toString());
                                 dos.writeUTF(writerPer.getEndDate().toString());
                                 dos.writeUTF(writerPer.getTitle());
-                                dos.writeUTF(writerPer.getDescription());
+                                writeEmptyString(dos, writerPer.getDescription());
                             });
                         });
                         break;
@@ -77,9 +79,9 @@ public class DataStreamSerializer implements SerializationStrategy {
                             return readSectionWithException(dis, () -> {
                                 OrganizationSection organizationSection = new OrganizationSection();
                                 readListWithException(dis, () -> {
-                                    Organization organization = new Organization(dis.readUTF());
+                                    Organization organization = new Organization(readEmptyString(dis));
                                     readListWithException(dis, () -> new Period(LocalDate.parse(dis.readUTF()),
-                                            LocalDate.parse(dis.readUTF()), dis.readUTF(), dis.readUTF())).
+                                            LocalDate.parse(dis.readUTF()), dis.readUTF(), readEmptyString(dis))).
                                             forEach(organization::addToPeriods);
                                     return organization;
                                 }).forEach(organizationSection::setOrganizations);
@@ -118,6 +120,23 @@ public class DataStreamSerializer implements SerializationStrategy {
             listRead.add(reader.read());
         }
         return listRead;
+    }
+
+    private void writeEmptyString(DataOutputStream dos, String text) throws IOException {
+        if(text == null) {
+            dos.writeUTF(EMPTY_SECTION);
+        } else {
+            dos.writeUTF(text);
+        }
+    }
+
+    private String readEmptyString(DataInputStream dis) throws IOException {
+        String text = dis.readUTF();
+        if (text.equals(EMPTY_SECTION)) {
+            return null;
+        } else {
+            return text;
+        }
     }
 }
 
