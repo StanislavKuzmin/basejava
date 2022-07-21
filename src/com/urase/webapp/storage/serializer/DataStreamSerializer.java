@@ -39,12 +39,14 @@ public class DataStreamSerializer implements SerializationStrategy {
                     case EXPERIENCE:
                         OrganizationSection organizationSection = (OrganizationSection) abstractSection;
                         writeWithException(organizationSection.getOrganizations(), dos, writerOrg -> {
-                            writeEmptyString(dos, writerOrg.getLinkEmployer());
+                            String link = writerOrg.getLinkEmployer() == null ? EMPTY_SECTION : writerOrg.getLinkEmployer();
+                            dos.writeUTF(link);
                             writeWithException(writerOrg.getPeriods(), dos, writerPer -> {
                                 dos.writeUTF(writerPer.getStartDate().toString());
                                 dos.writeUTF(writerPer.getEndDate().toString());
                                 dos.writeUTF(writerPer.getTitle());
-                                writeEmptyString(dos, writerPer.getDescription());
+                                String description = writerPer.getDescription() == null ? EMPTY_SECTION : writerPer.getDescription();
+                                dos.writeUTF(description);
                             });
                         });
                         break;
@@ -120,14 +122,6 @@ public class DataStreamSerializer implements SerializationStrategy {
             listRead.add(reader.read());
         }
         return listRead;
-    }
-
-    private void writeEmptyString(DataOutputStream dos, String text) throws IOException {
-        if(text == null) {
-            dos.writeUTF(EMPTY_SECTION);
-        } else {
-            dos.writeUTF(text);
-        }
     }
 
     private String readEmptyString(DataInputStream dis) throws IOException {
