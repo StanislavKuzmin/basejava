@@ -15,8 +15,8 @@ public class Resume implements Serializable {
     private static final long serialVersionUID = 1L;
     private String uuid;
     private String fullName;
-    private Map<SectionType, AbstractSection> sections;
-    private Map<ContactType, String> contacts;
+    private Map<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
+    private Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
@@ -25,8 +25,6 @@ public class Resume implements Serializable {
     public Resume(String uuid, String fullName) {
         this.uuid = uuid;
         this.fullName = fullName;
-        sections = new EnumMap<>(SectionType.class);
-        contacts = new EnumMap<>(ContactType.class);
     }
 
     public Resume() {

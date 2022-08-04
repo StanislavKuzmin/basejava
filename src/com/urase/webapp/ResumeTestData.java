@@ -16,13 +16,13 @@ public class ResumeTestData {
 
     public Resume createResume(String uuid, String fullName) {
         Resume resume = new Resume(uuid, fullName);
-        initializeContacts(resume);
-        initializeObjective(resume);
-        initializePersonal(resume);
-        initializeAchievement(resume);
-        initializeQualifications(resume);
-        initializeExperience(resume);
-        initializeEducation(resume);
+//        initializeContacts(resume);
+//        initializeObjective(resume);
+//        initializePersonal(resume);
+//        initializeAchievement(resume);
+//        initializeQualifications(resume);
+//        initializeExperience(resume);
+//        initializeEducation(resume);
         return resume;
     }
 

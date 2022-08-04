@@ -1,5 +1,6 @@
 package com.urase.webapp.storage;
 
+import com.urase.webapp.Config;
 import com.urase.webapp.ResumeTestData;
 import com.urase.webapp.exception.ExistStorageException;
 import com.urase.webapp.exception.NotExistStorageException;
@@ -16,9 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 public abstract class AbstractStorageTest {
 
-    protected static final File STORAGE_DIR = new File("/basejava/basejava/storage");
-
-    protected static final String DIR = "/basejava/basejava/storage";
+    protected static final File STORAGE_DIR = Config.get().getStorageDir();
 
     protected Storage storage;
     private static final String UUID_1 = "uuid1";
