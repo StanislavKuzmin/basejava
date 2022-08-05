@@ -8,8 +8,6 @@ import com.urase.webapp.sql.ConnectionFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class SqlStorage implements Storage {
@@ -41,19 +39,22 @@ public class SqlStorage implements Storage {
                 throw new NotExistStorageException(r.getUuid());
             }
         } catch (SQLException e) {
-            throw new NotExistStorageException(r.getUuid());
+            throw new StorageException(e);
         }
     }
 
     @Override
     public void save(Resume r) {
         try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?)")) {
+             PreparedStatement ps = conn.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?) ON CONFLICT (uuid) DO NOTHING RETURNING *")) {
             ps.setString(1, r.getUuid());
             ps.setString(2, r.getFullName());
-            ps.execute();
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                throw new ExistStorageException(r.getUuid());
+            }
         } catch (SQLException e) {
-            throw new ExistStorageException(e.toString());
+            throw new StorageException(e);
         }
     }
 
@@ -82,7 +83,7 @@ public class SqlStorage implements Storage {
                 throw new NotExistStorageException(uuid);
             }
         } catch (SQLException e) {
-            throw new NotExistStorageException(uuid);
+            throw new StorageException(e);
         }
     }
 
@@ -90,7 +91,7 @@ public class SqlStorage implements Storage {
     public List<Resume> getAllSorted() {
         ArrayList<Resume> resumes = new ArrayList<>();
         try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement("SELECT uuid, full_name FROM resume")) {
+             PreparedStatement ps = conn.prepareStatement("SELECT uuid, full_name FROM resume ORDER BY uuid DESC")) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 resumes.add(new Resume(rs.getString("uuid"), rs.getString("full_name")));
@@ -98,8 +99,6 @@ public class SqlStorage implements Storage {
         } catch (SQLException e) {
             throw new StorageException(e);
         }
-        resumes.sort(Comparator.comparing(Resume::getUuid));
-        Collections.reverse(resumes);
         return resumes;
     }
 
@@ -108,10 +107,7 @@ public class SqlStorage implements Storage {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement("SELECT COUNT(uuid) AS size FROM resume")) {
             ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                return 0;
-            }
-            return rs.getInt("size");
+            return !rs.next() ? 0 : rs.getInt("size");
         } catch (SQLException e) {
             throw new StorageException(e);
         }
