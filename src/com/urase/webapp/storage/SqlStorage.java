@@ -31,11 +31,10 @@ public class SqlStorage implements Storage {
     @Override
     public void update(Resume r) {
         try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement("UPDATE resume SET full_name = ? WHERE uuid = ? RETURNING *")) {
+             PreparedStatement ps = conn.prepareStatement("UPDATE resume SET full_name = ? WHERE uuid = ?")) {
             ps.setString(1, r.getFullName());
             ps.setString(2, r.getUuid());
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
+            if (ps.executeUpdate() == 0) {
                 throw new NotExistStorageException(r.getUuid());
             }
         } catch (SQLException e) {
@@ -46,14 +45,15 @@ public class SqlStorage implements Storage {
     @Override
     public void save(Resume r) {
         try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?) ON CONFLICT (uuid) DO NOTHING RETURNING *")) {
+             PreparedStatement ps = conn.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?)")) {
             ps.setString(1, r.getUuid());
             ps.setString(2, r.getFullName());
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
+            ps.execute();
+        } catch (SQLException e) {
+            final String ss = e.getSQLState();
+            if (ss.equals("23505")) {
                 throw new ExistStorageException(r.getUuid());
             }
-        } catch (SQLException e) {
             throw new StorageException(e);
         }
     }
@@ -76,10 +76,9 @@ public class SqlStorage implements Storage {
     @Override
     public void delete(String uuid) {
         try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement("DELETE FROM resume WHERE uuid = ? RETURNING *")) {
+             PreparedStatement ps = conn.prepareStatement("DELETE FROM resume WHERE uuid = ?")) {
             ps.setString(1, uuid);
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
+            if (ps.executeUpdate() == 0) {
                 throw new NotExistStorageException(uuid);
             }
         } catch (SQLException e) {
