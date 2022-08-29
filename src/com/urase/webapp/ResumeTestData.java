@@ -16,7 +16,7 @@ public class ResumeTestData {
 
     public Resume createResume(String uuid, String fullName) {
         Resume resume = new Resume(uuid, fullName);
-//        initializeContacts(resume);
+        initializeContacts(resume);
 //        initializeObjective(resume);
 //        initializePersonal(resume);
 //        initializeAchievement(resume);
