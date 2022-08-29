@@ -5,10 +5,8 @@ import com.urase.webapp.model.ContactType;
 import com.urase.webapp.model.Resume;
 import com.urase.webapp.sql.SqlHelper;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,32 +31,44 @@ public class SqlStorage implements Storage {
 
     @Override
     public void update(Resume r) {
-        String query = "UPDATE resume SET full_name = ? WHERE uuid = ?";
-        sqlHelper.queryExecute(ps -> {
-            ps.setString(1, r.getFullName());
-            ps.setString(2, r.getUuid());
-            if (ps.executeUpdate() == 0) {
-                throw new NotExistStorageException(r.getUuid());
-            }
-            return null;
-        }, query);
+        sqlHelper.transactionalExecute(conn -> {
+                    try (PreparedStatement ps1 = conn.prepareStatement("UPDATE resume SET full_name = ? WHERE uuid = ?");
+                         PreparedStatement ps2 = conn.prepareStatement("UPDATE contact SET value = ?" +
+                                                                           " WHERE (resume_uuid = ? AND type = ?)")) {
+                        ps1.setString(1, r.getFullName());
+                        ps1.setString(2, r.getUuid());
+                        if (ps1.executeUpdate() == 0) {
+                            throw new NotExistStorageException(r.getUuid());
+                        }
+                        for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
+                            ps2.setString(1, e.getValue());
+                            ps2.setString(2, r.getUuid());
+                            ps2.setString(3, e.getKey().name());
+                            ps2.addBatch();
+                        }
+                        ps2.executeBatch();
+                    }
+                    return null;
+                }
+        );
     }
 
     @Override
     public void save(Resume r) {
         sqlHelper.transactionalExecute(conn -> {
-                    PreparedStatement ps1 = createPreparedStatement(conn, "INSERT INTO resume (uuid, full_name) VALUES (?,?)");
-                    PreparedStatement ps2 = createPreparedStatement(conn, "INSERT INTO contact (resume_uuid, type, value) VALUES (?,?,?)");
-                    ps1.setString(1, r.getUuid());
-                    ps1.setString(2, r.getFullName());
-                    ps1.execute();
-                    for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
-                        ps2.setString(1, r.getUuid());
-                        ps2.setString(2, e.getKey().name());
-                        ps2.setString(3, e.getValue());
-                        ps2.addBatch();
+                    try (PreparedStatement ps1 = conn.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?)");
+                         PreparedStatement ps2 = conn.prepareStatement("INSERT INTO contact (resume_uuid, type, value) VALUES (?,?,?)")) {
+                        ps1.setString(1, r.getUuid());
+                        ps1.setString(2, r.getFullName());
+                        ps1.execute();
+                        for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
+                            ps2.setString(1, r.getUuid());
+                            ps2.setString(2, e.getKey().name());
+                            ps2.setString(3, e.getValue());
+                            ps2.addBatch();
+                        }
+                        ps2.executeBatch();
                     }
-                    ps2.executeBatch();
                     return null;
                 }
         );
@@ -130,9 +140,5 @@ public class SqlStorage implements Storage {
             ResultSet rs = ps.executeQuery();
             return !rs.next() ? 0 : rs.getInt("size");
         }, query);
-    }
-
-    private PreparedStatement createPreparedStatement(Connection con, String sql) throws SQLException {
-        return con.prepareStatement(sql);
     }
 }
