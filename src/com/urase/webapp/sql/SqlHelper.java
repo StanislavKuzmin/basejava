@@ -15,13 +15,12 @@ public class SqlHelper {
         connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
     }
 
-    public <T> T queryExecute(BlockOfCode<T> blockOfCode, String query) {
+    public <T> T queryExecute(String query, BlockOfCode<T> blockOfCode) {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
             return blockOfCode.execute(ps);
         } catch (SQLException e) {
-            final String ss = e.getSQLState();
-            if (ss.equals("23505")) {
+            if (e.getSQLState().equals("23505")) {
                 throw new ExistStorageException(e);
             }
             throw new StorageException(e);
