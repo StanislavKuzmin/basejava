@@ -12,7 +12,14 @@ public class SqlHelper {
     private final ConnectionFactory connectionFactory;
 
     public SqlHelper(String dbUrl, String dbUser, String dbPassword) {
-        connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+        connectionFactory = () -> {
+            try {
+                Class.forName("org.postgresql.Driver");
+            } catch (ClassNotFoundException e) {
+                throw new StorageException(e);
+            }
+            return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+        };
     }
 
     public <T> T queryExecute(String query, BlockOfCode<T> blockOfCode) {
