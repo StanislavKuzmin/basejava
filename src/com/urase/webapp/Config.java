@@ -1,5 +1,8 @@
 package com.urase.webapp;
 
+import com.urase.webapp.storage.SqlStorage;
+import com.urase.webapp.storage.Storage;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +17,8 @@ public class Config {
     private final String dbUser;
     private final String dbPassword;
 
+    private final Storage storage;
+
 
     public static Config get() {
         return INSTANCE;
@@ -27,6 +32,7 @@ public class Config {
             dbUrl = props.getProperty("db.url");
             dbUser = props.getProperty("db.user");
             dbPassword = props.getProperty("db.password");
+            storage = new SqlStorage(dbUrl, dbUser, dbPassword);
         } catch (IOException e) {
             throw new IllegalStateException("Invalid config file " + PROPS.getAbsolutePath());
         }
@@ -46,5 +52,9 @@ public class Config {
 
     public String getDbPassword() {
         return dbPassword;
+    }
+
+    public Storage getStorage() {
+        return storage;
     }
 }

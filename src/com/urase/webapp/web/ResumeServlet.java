@@ -2,7 +2,7 @@ package com.urase.webapp.web;
 
 import com.urase.webapp.Config;
 import com.urase.webapp.model.Resume;
-import com.urase.webapp.storage.SqlStorage;
+import com.urase.webapp.storage.Storage;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,14 +13,19 @@ import java.io.PrintWriter;
 import java.util.List;
 
 public class ResumeServlet extends HttpServlet {
-    private final SqlStorage sqlStorage = new SqlStorage(Config.get().getDbUrl(),
-            Config.get().getDbUser(), Config.get().getDbPassword());
+    private Storage storage;
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        storage = Config.get().getStorage();
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
-        List<Resume> resumes = sqlStorage.getAllSorted();
+        List<Resume> resumes = storage.getAllSorted();
         PrintWriter out = response.getWriter();
         out.println("<table border=\"1\">");
         out.println("<h2>A list of resumes</h2>");
