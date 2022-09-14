@@ -1,20 +1,23 @@
 package com.urase.webapp.storage;
 
 import com.urase.webapp.exception.NotExistStorageException;
-import com.urase.webapp.exception.StorageException;
-import com.urase.webapp.model.*;
+import com.urase.webapp.model.AbstractSection;
+import com.urase.webapp.model.ContactType;
+import com.urase.webapp.model.Resume;
+import com.urase.webapp.model.SectionType;
 import com.urase.webapp.sql.SqlHelper;
+import com.urase.webapp.util.JsonParser;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SqlStorage implements Storage {
-
-    private static final String NEWLINE = "\n";
-    private static final String EMPTY_STRING = "";
     private final SqlHelper sqlHelper;
 
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
@@ -82,18 +85,16 @@ public class SqlStorage implements Storage {
             try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM contact WHERE resume_uuid = ?")) {
                 ps.setString(1, uuid);
                 ResultSet rs = ps.executeQuery();
-                rs.next();
-                do {
+                while (rs.next()) {
                     addContact(rs, r);
-                } while (rs.next());
+                }
             }
             try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM section WHERE resume_uuid = ?")) {
                 ps.setString(1, uuid);
                 ResultSet rs = ps.executeQuery();
-                rs.next();
-                do {
+                while (rs.next()) {
                     addSection(rs, r);
-                } while (rs.next());
+                }
             }
             return r;
         });
@@ -146,35 +147,17 @@ public class SqlStorage implements Storage {
     }
 
     private void addContact(ResultSet rs, Resume r) throws SQLException {
-        String type = rs.getString("type");
-        if (type != null) {
-            r.saveContact(ContactType.valueOf(type), rs.getString("value"));
+        String value = rs.getString("value");
+        if (value != null) {
+            r.saveContact(ContactType.valueOf(rs.getString("type")), value);
         }
     }
 
     private void addSection(ResultSet rs, Resume r) throws SQLException {
-        String type = rs.getString("type");
-        if (type != null) {
-            r.saveSection(SectionType.valueOf(type), createSection(rs, SectionType.valueOf(type)));
-        }
-    }
-
-    private AbstractSection createSection(ResultSet rs, SectionType sectionType) throws SQLException {
-        switch (sectionType) {
-            case PERSONAL:
-            case OBJECTIVE:
-                return new SimpleSection(rs.getString("description"));
-            case ACHIEVEMENT:
-            case QUALIFICATIONS:
-                ListSimpleSection listSimpleSection = new ListSimpleSection();
-                new ArrayList<>(Arrays.asList(rs.getString("description").split(NEWLINE)))
-                        .forEach(listSimpleSection::addTextToList);
-                return listSimpleSection;
-            case EDUCATION:
-            case EXPERIENCE:
-                return new OrganizationSection();
-            default:
-                throw new StorageException("Unknown type of section in database", null);
+        String description = rs.getString("description");
+        if (description != null) {
+            SectionType type = SectionType.valueOf(rs.getString("type"));
+            r.saveSection(type, JsonParser.read(description, AbstractSection.class));
         }
     }
 
@@ -195,30 +178,12 @@ public class SqlStorage implements Storage {
             for (Map.Entry<SectionType, AbstractSection> e : r.getSections().entrySet()) {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, e.getKey().name());
-                ps.setString(3, convertSectionToString(e.getKey(), e.getValue()));
+                AbstractSection section = e.getValue();
+                ps.setString(3, JsonParser.write(section, AbstractSection.class));
                 ps.addBatch();
             }
             ps.executeBatch();
         }
     }
 
-    private String convertSectionToString(SectionType sectionType, AbstractSection abstractSection) {
-        switch (sectionType) {
-            case PERSONAL:
-            case OBJECTIVE:
-                SimpleSection simpleSection = (SimpleSection) abstractSection;
-                return simpleSection.getText();
-            case ACHIEVEMENT:
-            case QUALIFICATIONS:
-                ListSimpleSection listSimpleSection = (ListSimpleSection) abstractSection;
-                StringBuilder description = new StringBuilder();
-                listSimpleSection.getItems().stream().map(text -> description.append(text).append(NEWLINE)).count();
-                return description.toString();
-            case EDUCATION:
-            case EXPERIENCE:
-                return EMPTY_STRING;
-            default:
-                throw new StorageException("Unknown type of section", null);
-        }
-    }
 }

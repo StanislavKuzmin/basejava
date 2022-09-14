@@ -9,6 +9,12 @@ public class OrganizationSection extends AbstractSection {
     private static final long serialVersionUID = 1L;
     private final List<Organization> organizations;
 
+    public static final OrganizationSection EMPTY = new OrganizationSection();
+
+    static {
+        EMPTY.setOrganizations(Organization.EMPTY);
+    }
+
     public OrganizationSection() {
         organizations = new ArrayList<>();
     }

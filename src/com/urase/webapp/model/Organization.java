@@ -11,14 +11,32 @@ public class Organization implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String linkEmployer;
+
+    private String nameEmployer;
     private List<Period> periods;
+
+    public static final Organization EMPTY = new Organization("", "");
+
+    static {
+        EMPTY.addToPeriods(Period.EMPTY);
+    }
 
     public Organization(String linkEmployer) {
         this.linkEmployer = linkEmployer;
         periods = new ArrayList<>();
     }
 
+    public Organization(String nameEmployer, String linkEmployer) {
+        this.nameEmployer = nameEmployer;
+        this.linkEmployer = linkEmployer;
+        periods = new ArrayList<>();
+    }
+
     public Organization() {
+    }
+
+    public String getNameEmployer() {
+        return nameEmployer;
     }
 
     public String getLinkEmployer() {

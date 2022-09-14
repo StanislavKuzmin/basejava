@@ -10,6 +10,12 @@ public class ListSimpleSection extends AbstractSection {
 
     private final List<String> items;
 
+    public static final ListSimpleSection EMPTY = new ListSimpleSection();
+
+    static {
+        EMPTY.addTextToList("");
+    }
+
     public ListSimpleSection() {
         items = new ArrayList<>();
     }

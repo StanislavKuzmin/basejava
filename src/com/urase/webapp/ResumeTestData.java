@@ -1,6 +1,7 @@
 package com.urase.webapp;
 
 import com.urase.webapp.model.*;
+import com.urase.webapp.util.HtmlEditor;
 
 import java.time.LocalDate;
 
@@ -11,7 +12,8 @@ public class ResumeTestData {
     public static void main(String[] args) {
         ResumeTestData resumeTestData = new ResumeTestData();
         Resume resume = resumeTestData.createResume("uuid1", "Grigoriy Kislin");
-        System.out.println(resume);
+            System.out.println(HtmlEditor.toHtml(resume));
+
     }
 
     public Resume createResume(String uuid, String fullName) {
@@ -21,8 +23,8 @@ public class ResumeTestData {
         initializePersonal(resume);
         initializeAchievement(resume);
         initializeQualifications(resume);
-//        initializeExperience(resume);
-//        initializeEducation(resume);
+        initializeExperience(resume);
+        initializeEducation(resume);
         return resume;
     }
 
@@ -63,12 +65,12 @@ public class ResumeTestData {
     private void initializeExperience(Resume resume) {
         Period period1 = new Period(LocalDate.of(2013, 10, 1), LocalDate.now(),
                 "text8", "Автор проекта");
-        Organization organization_1 = new Organization("https://javaops.ru/");
+        Organization organization_1 = new Organization("Java Online Profects","https://javaops.ru/");
         organization_1.addToPeriods(period1);
         Period period2 = new Period(LocalDate.of(2014, 10, 1), LocalDate.of(2016, 1, 1),
                 "text9",
                 "Старший разработчик (backend)");
-        Organization organization_2 = new Organization("https://www.wrike.com/");
+        Organization organization_2 = new Organization("Wrike","https://www.wrike.com/");
         organization_2.addToPeriods(period2);
         OrganizationSection listExperience = new OrganizationSection();
         listExperience.setOrganizations(organization_1);
@@ -82,7 +84,7 @@ public class ResumeTestData {
         Period period2 = new Period(LocalDate.of(1987, 9, 1), LocalDate.of(1993, 7, 1), "Инженер",
                 "программист Fortran, C");
         Organization education_1 = new Organization("Санкт-Петербургский национальный исследовательский университет" +
-                " информационных технологий, механики и оптики");
+                " информационных технологий, механики и оптики", "www.ifmo.ru");
         education_1.addToPeriods(period1);
         education_1.addToPeriods(period2);
         OrganizationSection listEducation = new OrganizationSection();

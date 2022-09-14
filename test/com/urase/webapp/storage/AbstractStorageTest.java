@@ -1,7 +1,6 @@
 package com.urase.webapp.storage;
 
 import com.urase.webapp.Config;
-import com.urase.webapp.ResumeTestData;
 import com.urase.webapp.exception.ExistStorageException;
 import com.urase.webapp.exception.NotExistStorageException;
 import com.urase.webapp.model.Resume;
@@ -9,10 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
+import static com.urase.webapp.TestData.*;
 import static org.junit.Assert.assertEquals;
 
 public abstract class AbstractStorageTest {
@@ -20,22 +17,6 @@ public abstract class AbstractStorageTest {
     protected static final File STORAGE_DIR = Config.get().getStorageDir();
 
     protected Storage storage;
-    private static final String UUID_1 = "uuid1";
-    private static final String UUID_2 = "uuid2";
-    private static final String UUID_3 = "uuid3";
-    private static final String FULL_NAME_1 = "Obi-Wan Kenobi";
-    private static final String FULL_NAME_2 = "Dart Weider";
-    private static final String FULL_NAME_3 = "Anakin Skywalker";
-    private static final int EXPECTED_SIZE = 3;
-    private static final int EMPTY_SIZE = 0;
-    private static final int AFTER_DELETE_SIZE = 2;
-    private static final ResumeTestData resumeTestData = new ResumeTestData();
-    private static final List<Resume> RESUME_STORAGE = new ArrayList<>(Arrays.asList(resumeTestData.createResume(UUID_3, FULL_NAME_3),
-            resumeTestData.createResume(UUID_2, FULL_NAME_2), resumeTestData.createResume(UUID_1, FULL_NAME_1)));
-    private static final List<Resume> ONE_DELETE_RESUME_STORAGE = new ArrayList<>(Arrays.asList(resumeTestData.createResume(UUID_3, FULL_NAME_3),
-            resumeTestData.createResume(UUID_2, FULL_NAME_2)));
-    private static final List<Resume> EMPTY_STORAGE = new ArrayList<>();
-    private static final Resume RESUME = resumeTestData.createResume(UUID_1, FULL_NAME_1);
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;

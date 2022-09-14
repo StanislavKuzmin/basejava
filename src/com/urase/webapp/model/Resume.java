@@ -8,6 +8,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Resume implements Serializable {
@@ -15,8 +16,20 @@ public class Resume implements Serializable {
     private static final long serialVersionUID = 1L;
     private String uuid;
     private String fullName;
-    private Map<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
-    private Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
+    private final Map<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
+    private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
+
+    public static final Resume EMPTY_RESUME;
+
+    static {
+        EMPTY_RESUME = new Resume();
+        EMPTY_RESUME.saveSection(SectionType.ACHIEVEMENT, SimpleSection.EMPTY);
+        EMPTY_RESUME.saveSection(SectionType.OBJECTIVE, SimpleSection.EMPTY);
+        EMPTY_RESUME.saveSection(SectionType.PERSONAL, ListSimpleSection.EMPTY);
+        EMPTY_RESUME.saveSection(SectionType.QUALIFICATIONS, ListSimpleSection.EMPTY);
+        EMPTY_RESUME.saveSection(SectionType.EDUCATION, OrganizationSection.EMPTY);
+        EMPTY_RESUME.saveSection(SectionType.EXPERIENCE, OrganizationSection.EMPTY);
+    }
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
@@ -28,6 +41,10 @@ public class Resume implements Serializable {
     }
 
     public Resume() {
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getUuid() {
@@ -52,6 +69,14 @@ public class Resume implements Serializable {
 
     public Map<ContactType, String> getContacts() {
         return contacts;
+    }
+
+    public String getContact(ContactType type) {
+        return contacts.get(type);
+    }
+
+    public AbstractSection getSection(SectionType type) {
+        return sections.get(type);
     }
 
     @Override

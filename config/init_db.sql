@@ -1,14 +1,14 @@
 DROP TABLE IF EXISTS resume, contact, section;
 CREATE TABLE resume
 (
-    uuid      CHAR(5) PRIMARY KEY NOT NULL,
+    uuid      CHAR(36) PRIMARY KEY NOT NULL,
     full_name TEXT                 NOT NULL
 );
 
 CREATE TABLE contact
 (
     id          SERIAL,
-    resume_uuid CHAR(5) NOT NULL REFERENCES resume (uuid) ON DELETE CASCADE,
+    resume_uuid CHAR(36) NOT NULL REFERENCES resume (uuid) ON DELETE CASCADE,
     type        TEXT     NOT NULL,
     value       TEXT     NOT NULL
 );
@@ -17,8 +17,8 @@ CREATE UNIQUE INDEX contact_uuid_type_index
 
 CREATE TABLE section
 (
-    id          SERIAL,
-    resume_uuid CHAR(5) NOT NULL REFERENCES resume (uuid) ON DELETE CASCADE,
+    id          SERIAL PRIMARY KEY,
+    resume_uuid CHAR(36) NOT NULL REFERENCES resume (uuid) ON DELETE CASCADE,
     type        TEXT     NOT NULL,
     description TEXT     NOT NULL
 );

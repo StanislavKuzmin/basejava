@@ -6,6 +6,7 @@ public class SimpleSection extends AbstractSection {
 
     private static final long serialVersionUID = 1L;
     private String text;
+    public static final SimpleSection EMPTY = new SimpleSection("");
 
     public SimpleSection(String text) {
         this.text = text;
