@@ -17,10 +17,6 @@ public class Organization implements Serializable {
 
     public static final Organization EMPTY = new Organization("", "");
 
-    static {
-        EMPTY.addToPeriods(Period.EMPTY);
-    }
-
     public Organization(String linkEmployer) {
         this.linkEmployer = linkEmployer;
         periods = new ArrayList<>();
@@ -30,6 +26,17 @@ public class Organization implements Serializable {
         this.nameEmployer = nameEmployer;
         this.linkEmployer = linkEmployer;
         periods = new ArrayList<>();
+    }
+
+    public Organization(String linkEmployer, List<Period> periods) {
+        this.linkEmployer = linkEmployer;
+        this.periods = periods;
+    }
+
+    public Organization(String nameEmployer, String linkEmployer, List<Period> periods) {
+        this.nameEmployer = nameEmployer;
+        this.linkEmployer = linkEmployer;
+        this.periods = periods;
     }
 
     public Organization() {

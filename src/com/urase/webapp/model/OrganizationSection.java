@@ -11,12 +11,13 @@ public class OrganizationSection extends AbstractSection {
 
     public static final OrganizationSection EMPTY = new OrganizationSection();
 
-    static {
-        EMPTY.setOrganizations(Organization.EMPTY);
-    }
-
     public OrganizationSection() {
         organizations = new ArrayList<>();
+    }
+
+    public OrganizationSection(List<Organization> organizations) {
+        Objects.requireNonNull(organizations, "organizations must not be null");
+        this.organizations = organizations;
     }
 
     public List<Organization> getOrganizations() {

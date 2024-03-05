@@ -3,6 +3,9 @@ package com.urase.webapp.web;
 import com.urase.webapp.Config;
 import com.urase.webapp.model.*;
 import com.urase.webapp.storage.Storage;
+import com.urase.webapp.util.DateUtil;
+import com.urase.webapp.util.HtmlUtil;
+import sun.swing.SwingUtilities2;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ResumeServlet extends HttpServlet {
     private Storage storage;
@@ -27,7 +31,7 @@ public class ResumeServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action == null) {
             request.setAttribute("resumes", storage.getAllSorted());
-            request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/jsp/list2.jsp").forward(request, response);
             return;
         }
         Resume r;
@@ -41,38 +45,45 @@ public class ResumeServlet extends HttpServlet {
                 break;
             case "edit":
                 r = storage.get(uuid);
-                for (SectionType section : SectionType.values()) {
-                    switch (section) {
+                for (SectionType type : SectionType.values()) {
+                    AbstractSection section = r.getSection(type);
+                    switch (type) {
                         case PERSONAL:
                         case OBJECTIVE:
-                            if (r.getSection(section) == null) {
-                                r.saveSection(section, SimpleSection.EMPTY);
+                            if (section == null) {
+                                section = SimpleSection.EMPTY;
                             }
                             break;
                         case ACHIEVEMENT:
                         case QUALIFICATIONS:
-                            if (r.getSection(section) == null) {
-                                r.saveSection(section, ListSimpleSection.EMPTY);
+                            if (section == null) {
+                                section = ListSimpleSection.EMPTY;
                             }
-                            break;
-                        case EDUCATION:
                         case EXPERIENCE:
-                            if (r.getSection(section) == null) {
-                                r.saveSection(section, OrganizationSection.EMPTY);
+                        case EDUCATION:
+                            OrganizationSection orgSection = (OrganizationSection) section;
+                            List<Organization> emptyFirstOrganizations = new ArrayList<>();
+                            emptyFirstOrganizations.add(Organization.EMPTY);
+                            if (orgSection != null) {
+                                for (Organization org : orgSection.getOrganizations()) {
+                                    List<Period> emptyFirstPositions = new ArrayList<>();
+                                    emptyFirstPositions.add(Period.EMPTY);
+                                    emptyFirstPositions.addAll(org.getPeriods());
+                                    emptyFirstOrganizations.add(new Organization(org.getLinkEmployer(), emptyFirstPositions));
+                                }
                             }
+                            section = new OrganizationSection(emptyFirstOrganizations);
                             break;
                     }
+                    r.saveSection(type, section);
                 }
-                break;
-            case "add":
-                r = Resume.EMPTY_RESUME;
                 break;
             default:
                 throw new IllegalArgumentException("Action" + action + " is illegal");
         }
         request.setAttribute("resume", r);
         request.getRequestDispatcher(
-                ("view".equals(action) ? "WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp")
+                ("view".equals(action) ? "WEB-INF/jsp/view2.jsp" : "WEB-INF/jsp/edit2.jsp")
         ).forward(request, response);
     }
 
@@ -81,7 +92,7 @@ public class ResumeServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
         String fullName = request.getParameter("fullName");
-        if (fullName == null  || fullName.trim().length() == 0) {
+        if (HtmlUtil.isEmpty(fullName)) {
             response.sendRedirect("resume");
             return;
         }
@@ -95,7 +106,7 @@ public class ResumeServlet extends HttpServlet {
         }
         for (ContactType type : ContactType.values()) {
             String value = request.getParameter(type.name());
-            if (value != null && value.trim().length() != 0) {
+            if (!HtmlUtil.isEmpty(value)) {
                 r.saveContact(type, value);
             } else {
                 r.getContacts().remove(type);
@@ -103,7 +114,8 @@ public class ResumeServlet extends HttpServlet {
         }
         for (SectionType type : SectionType.values()) {
             String value = request.getParameter(type.name());
-            if (value != null && value.trim().length() != 0) {
+            String[] values = request.getParameterValues(type.name());
+            if (!HtmlUtil.isEmpty(value) && values.length > 2) {
                 switch (type) {
                     case OBJECTIVE:
                     case PERSONAL:
@@ -115,6 +127,29 @@ public class ResumeServlet extends HttpServlet {
                         new ArrayList<>(Arrays.asList(value.split("\n")))
                                 .forEach(listSimpleSection::addTextToList);
                         r.saveSection(type, listSimpleSection);
+                        break;
+                    case EDUCATION:
+                    case EXPERIENCE:
+                        List<Organization> orgs = new ArrayList<>();
+                        String[] urls = request.getParameterValues(type.name() + "url");
+                        for (int i = 0; i < values.length; i++) {
+                            String name = values[i];
+                            if (!HtmlUtil.isEmpty(name)) {
+                                List<Period> positions = new ArrayList<>();
+                                String pfx = type.name() + i;
+                                String[] startDates = request.getParameterValues(pfx + "startDate");
+                                String[] endDates = request.getParameterValues(pfx + "endDate");
+                                String[] titles = request.getParameterValues(pfx + "title");
+                                String[] descriptions = request.getParameterValues(pfx + "description");
+                                for (int j = 0; j < titles.length; j++) {
+                                    if (!HtmlUtil.isEmpty(titles[j])) {
+                                        positions.add(new Period(DateUtil.parse(startDates[j]), DateUtil.parse(endDates[j]), titles[j], descriptions[j]));
+                                    }
+                                }
+                                orgs.add(new Organization(name, urls[i], positions));
+                            }
+                        }
+                        r.saveSection(type, new OrganizationSection(orgs));
                         break;
                 }
             } else {
