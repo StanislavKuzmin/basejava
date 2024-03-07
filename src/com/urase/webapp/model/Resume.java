@@ -19,13 +19,12 @@ public class Resume implements Serializable {
     private final Map<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
     private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
 
-    public static final Resume EMPTY_RESUME;
+    public static final Resume EMPTY_RESUME = new Resume();
 
     static {
-        EMPTY_RESUME = new Resume();
-        EMPTY_RESUME.saveSection(SectionType.ACHIEVEMENT, SimpleSection.EMPTY);
+        EMPTY_RESUME.saveSection(SectionType.PERSONAL, SimpleSection.EMPTY);
         EMPTY_RESUME.saveSection(SectionType.OBJECTIVE, SimpleSection.EMPTY);
-        EMPTY_RESUME.saveSection(SectionType.PERSONAL, ListSimpleSection.EMPTY);
+        EMPTY_RESUME.saveSection(SectionType.ACHIEVEMENT, ListSimpleSection.EMPTY);
         EMPTY_RESUME.saveSection(SectionType.QUALIFICATIONS, ListSimpleSection.EMPTY);
         EMPTY_RESUME.saveSection(SectionType.EDUCATION, OrganizationSection.EMPTY);
         EMPTY_RESUME.saveSection(SectionType.EXPERIENCE, OrganizationSection.EMPTY);

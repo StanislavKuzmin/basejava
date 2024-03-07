@@ -7,10 +7,9 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <base href="${pageContext.request.contextPath}/"/>
-  <link rel="stylesheet" href="css/theme/${theme}.css">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/view-resume-styles.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/view-resume-styles.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/theme/light.css">
   <jsp:useBean id="resume" type="com.urase.webapp.model.Resume" scope="request"/>
   <title>Резюме ${resume.fullName}</title>
 </head>
@@ -20,8 +19,8 @@
 <div class="scrollable-panel">
   <div class="form-wrapper">
     <div class="full-name">${resume.fullName}
-      <a class="no-underline-anchor" href="resume?uuid=${resume.uuid}&action=edit&theme=${theme}">
-        <img src="img/${theme}/edit.svg" alt="">
+      <a class="no-underline-anchor" href="resume?uuid=${resume.uuid}&action=edit">
+        <img src="${pageContext.request.contextPath}/img/light/edit.svg" alt="">
       </a>
     </div>
     <div class="contacts">

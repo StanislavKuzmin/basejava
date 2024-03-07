@@ -5,7 +5,6 @@ import com.urase.webapp.model.*;
 import com.urase.webapp.storage.Storage;
 import com.urase.webapp.util.DateUtil;
 import com.urase.webapp.util.HtmlUtil;
-import sun.swing.SwingUtilities2;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -43,6 +42,9 @@ public class ResumeServlet extends HttpServlet {
             case "view":
                 r = storage.get(uuid);
                 break;
+            case "add":
+                r = Resume.EMPTY_RESUME;
+                break;
             case "edit":
                 r = storage.get(uuid);
                 for (SectionType type : SectionType.values()) {
@@ -59,6 +61,7 @@ public class ResumeServlet extends HttpServlet {
                             if (section == null) {
                                 section = ListSimpleSection.EMPTY;
                             }
+                            break;
                         case EXPERIENCE:
                         case EDUCATION:
                             OrganizationSection orgSection = (OrganizationSection) section;

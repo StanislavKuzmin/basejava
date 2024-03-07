@@ -9,10 +9,9 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <base href="${pageContext.request.contextPath}/"/>
-  <link rel="stylesheet" href="css/theme/${theme}.css">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/edit-resume-styles.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/edit-resume-styles.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/theme/light.css">
   <jsp:useBean id="resume" type="com.urase.webapp.model.Resume" scope="request"/>
   <title>Резюме ${resume.fullName}</title>
 </head>
@@ -20,7 +19,6 @@
 <jsp:include page="fragments/header2.jsp"/>
 <form method="post" action="resume" enctype="application/x-www-form-urlencoded">
   <input type="hidden" name="uuid" value="${resume.uuid}">
-  <input type="hidden" name="theme" value="${theme}">
   <div class="scrollable-panel">
     <div class="form-wrapper">
       <div class="section">ФИО</div>
